@@ -25,8 +25,8 @@ Then setup your lib/mancora.rb file. Only class_name and interval are required
       # widget :example do 
       #   class_name whatever_class_name_to_query
       #   interval [:hour, :daily, :weekly, :monthly, :yearly]
-      #   conditions any_condition_to_include_in_query
-      #   field field_if_not_created_at
+      #   conditions condition_to_include_in_query
+      #   field if_its_not_created_at
       #   time lag_by_this_amount
       # end
 
@@ -46,9 +46,11 @@ Then setup your lib/mancora.rb file. Only class_name and interval are required
     end
 
 To run this in the console
+
     Mancora.run
 
 And to backfill the last 36 hours
+
     Mancora.run(36)
 
 Finally setup the cron
@@ -57,15 +59,16 @@ Finally setup the cron
 
 Result in db
 
-id | name | interval | count | start | end | created_at | updated_at
---- | --- | --- | --- | --- | --- | --- | --- 
-1 | errors | hourly | 4 | 2013-03-01 21:00:00 | 2013-03-01 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52
-2 | subscribers_count | hourly | 2 | 2013-02-28 21:00:00 | 2013-02-28 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52
+id | name | interval | count | start | end
+--- | --- | --- | --- | --- | ---
+1 | errors | hourly | 4 | 2013-03-01 21:00:00 | 2013-03-01 21:59:59
+2 | subscribers_count | hourly | 2 | 2013-02-28 21:00:00 | 2013-02-28 21:59:59
 
 
-## Graphing in a view
+## Graphing the results
 
 I ended up using Morris: http://www.oesmith.co.uk/morris.js/
+
 After installing Raphael/Morris its as easy as: 
 
 Controller
