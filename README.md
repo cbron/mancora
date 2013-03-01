@@ -14,45 +14,53 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install mancora
+    gem install mancora
     rails g mancora:install
     rake db:migrate # Creates a mancora_stats table, Mancora::Stat from rails
 
-Then setup your lib/mancora.rb file
+Then setup your lib/mancora.rb file. Only class_name and interval are required
 
-    Mancora.widgets do 
+    Mancora.widgets do
 
       # widget :example do 
       #   class_name whatever_class_name_to_query
       #   interval [:hour, :daily, :weekly, :monthly, :yearly]
       #   conditions any_condition_to_include_in_query
       #   field field_if_not_created_at
-      #   time if_not_default_of_last_hour
+      #   time lag_by_this_amount
       # end
 
       widget :errors do
-        class_name ManualStat
-        interval [:hourly, :daily, :monthly]
+        class_name Requests
+        interval :hourly
         conditions :name => "error"
       end
 
       widget :subscribers_count do
         class_name Subscriber
-        interval :hourly
+        interval [:hourly, :daily, :monthly, :yearly]
         field :registered_at
         time 1.day.ago #lag by one day
       end
 
     end
 
+To run this in the console
+    Mancora.run
+
+And to backfill the last 36 hours
+    Mancora.run(36)
 
 Finally setup the cron
 
     cron here
 
-This will create:
+Result in db
 
-    db stuff here
+    Id | Name | Inteval | Count | Start | End | created_at | updated_at
+    1 | errors | hourly | 4 | 2013-03-01 21:00:00 | 2013-03-01 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52'
+    2 | subscribers_count | hourly | 2 | 2013-02-28 21:00:00 | 2013-02-28 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52'
+
 
 ## Using in a view
 
