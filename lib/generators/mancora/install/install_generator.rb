@@ -18,6 +18,7 @@ module Mancora
 
       def copy_migrations
         migration_template "create_mancora_stats.rb", "db/migrate/create_mancora_stats.rb"
+        copy_file "mancora.rb", "lib/mancora.rb"        
       end
     end
   end

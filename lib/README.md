@@ -1,3 +1,0 @@
-#Mancora
-
-##Usage

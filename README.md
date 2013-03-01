@@ -1,8 +1,9 @@
 # Mancora
 
-TODO: Write a gem description
+Easily save counts of models on regular intervals into a single table to use for statistics.
 
-## Installation
+
+# Installation
 
 Add this line to your application's Gemfile:
 
