@@ -57,7 +57,8 @@ Finally setup the cron
 
 Result in db
 
-id | name | inteval | count | start | end | created_at | updated_at
+id | name | interval | count | start | end | created_at | updated_at
+--- | --- | --- | --- | --- | --- | --- | --- 
 1 | errors | hourly | 4 | 2013-03-01 21:00:00 | 2013-03-01 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52
 2 | subscribers_count | hourly | 2 | 2013-02-28 21:00:00 | 2013-02-28 21:59:59 | 2013-03-01 22:13:52 | 2013-03-01 22:13:52
 
@@ -68,13 +69,16 @@ I ended up using Morris: http://www.oesmith.co.uk/morris.js/
 After installing Raphael/Morris its as easy as: 
 
 Controller
+
     @errors_today = Mancora::Stat.where(:name => "errors", :interval => :hourly).limit(24).order("start desc")
 
 View
+
     %h1 Errors today
     =content_tag :div, "", id: "errors_chart", data: {errors: @errors_today} 
 
 Coffeescript
+
     Morris.Line
       element: "errors_chart"
       data: $("#errors_chart").data('errors')
