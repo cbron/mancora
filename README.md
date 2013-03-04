@@ -2,6 +2,10 @@
 
 Easily save counts of models or specific model queries on regular intervals into a single table to use for statistics.
 
+For example, you can set up a count on the number of subscribers you get per hour, day, week, etc. That number will be saved in a table in the database with which you can do whatever you want (I'll show you how to graph it below). 
+
+You can specifiy which intervals you want to track, and also specify certain conditions on the query such as `:country => "Canada"`. The datetime field to query on can also be set if its not created_at: `field :registered_at`.
+
 ## Installation
 
 Add this line to your application's Gemfile
@@ -72,18 +76,18 @@ After installing Raphael/Morris its as easy as:
 
 Controller
 
-    @errors_today = Mancora::Stat.where(:name => "errors", :interval => :hourly).limit(24).order("start desc")
+    @subscribers_today = Mancora::Stat.where(:name => "subscribers_count", :interval => :hourly).limit(24).order("start desc")
 
 View
 
-    %h1 Errors today
-    =content_tag :div, "", id: "errors_chart", data: {errors: @errors_today} 
+    %h1 Subscribers today
+    =content_tag :div, "", id: "subscribers_chart", data: {subscribers: @subscribers_today} 
 
 Coffeescript
 
     Morris.Line
-      element: "errors_chart"
-      data: $("#errors_chart").data('errors')
+      element: "subscribers_chart"
+      data: $("#subscribers_chart").data('subscribers')
       xkey: "start"
       ykeys: ["count"]
       labels: ["Count"]

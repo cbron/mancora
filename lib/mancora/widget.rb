@@ -13,7 +13,7 @@ class Widget
     backfill.downto(0) do |b|
       @run_time = @time - b.hours
       @interval.each do |i|
-        conditions = @conditions.merge!(get_interval(i)) 
+        conditions = @conditions.merge!(get_interval(i))
         run(i, conditions) if should_i_run?(i)
       end
     end
@@ -43,6 +43,7 @@ class Widget
     puts "Running " + interval.to_s.capitalize + " " + self.name.to_s
     result = @class_name.where(conditions)
 
+    #create or update record, this way we can backfill without overwriting
     obj = Mancora::Stat.find_or_initialize_by_name_and_start(name, @start)
 
     obj.update_attributes(
@@ -54,6 +55,7 @@ class Widget
     )
   end
 
+  #given an interval symbol, return a hash with the correct conditions
   def get_interval(interval)
     case interval
       when :custom
@@ -81,16 +83,17 @@ class Widget
     end
   end
 
+  #given an interval symbol, determine whether or not a query (and relative db insert) should take place
   def should_i_run?(interval)
     if interval == :hourly
       true
-    elsif @run_time.hour == 0 && @interval == :daily
+    elsif @run_time.hour == 0 && interval == :daily
       true
-    elsif @run_time.beginning_of_week == @run_time.beginning_of_day && @interval == :weekly
+    elsif @run_time.beginning_of_week == @run_time.beginning_of_day && interval == :weekly
       true
-    elsif (@run_time.day == 1) && @interval == :monthly
+    elsif (@run_time.day == 1) && interval == :monthly
       true
-    elsif @run_time.beginning_of_year == @run_time.beginning_of_day && @interval == :yearly
+    elsif @run_time.beginning_of_year == @run_time.beginning_of_day && interval == :yearly
       true
     else
       false

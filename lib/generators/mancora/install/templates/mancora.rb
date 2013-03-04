@@ -2,7 +2,7 @@ Mancora.widgets do
 
   # widget :errors do
   #   class_name ManualStat
-  #   interval [:hourly, :daily, :monthly]
+  #   interval [:hourly, :daily, :weekly, :monthly, :yearly]
   #   conditions :name => "error"
   # end
 
