@@ -4,22 +4,22 @@ Easily save counts of models or specific model queries on regular intervals into
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's Gemfile
 
     gem 'mancora'
 
-And then execute:
+And then execute
 
-    $ bundle
+    bundle
 
-To add it to your application:
+To add it to your application
 
     rails g mancora:install
     rake db:migrate # Creates a mancora_stats table, use `Mancora::Stat` to access it
 
 ## Usage
 
-Then setup your lib/mancora.rb file. Only class_name and interval are required.
+Then setup your lib/mancora.rb file. Only class_name and interval are required
 
     Mancora.widgets do
 
@@ -56,7 +56,7 @@ Finally setup a cron to run **every hour**. You could use the whenever gem but p
 
     
 
-Result in db (Notice subscribers_count has a day lag)
+Result in db (notice subscribers_count has a day lag)
 
 id | name | interval | count | start | end
 --- | --- | --- | --- | --- | ---
