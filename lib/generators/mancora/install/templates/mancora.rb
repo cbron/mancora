@@ -13,4 +13,10 @@ Mancora.widgets do
   #   time 1.day.ago #lag by one day
   # end
 
+  # widget :total_subscribers_count do
+  #   class_name Subscriber
+  #   interval [:daily, :weekly, :monthly, :yearly]
+  #   count_type :total
+  # end
+
 end

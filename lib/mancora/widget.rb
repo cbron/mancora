@@ -10,10 +10,12 @@ class Widget
 
     #run all backfills plus the original @time
     backfill.downto(0) do |b|
+      b != 0 ? @backfilling = true : @backfilling = false
       @run_time = @time - b.hours
+
       @interval.each do |i|
         time_interval = @query.blank? ? get_interval(i) : {}
-        all_conditions = @conditions.merge!(time_interval)
+        all_conditions = @conditions.merge(time_interval)
         run(i, all_conditions) if should_i_run?(i)
       end
     end
@@ -55,11 +57,11 @@ class Widget
   end
 
   def run(interval, all_conditions)
-    puts "Running " + interval.to_s.capitalize + " " + self.name.to_s
+    puts "Running " + interval.to_s + " " + self.name.to_s
     if @count_type == :timed
       result = @class_name.where(all_conditions)
     elsif @count_type == :total
-      count = @class_name.count
+      count = (@backfilling ? nil : @class_name.where(@conditions).count)
     elsif !@query.blank?
       result = eval(@query)
     end
@@ -72,7 +74,7 @@ class Widget
        :start => @start,
        :end => @end,
        :interval => interval,
-       :count => count || result.count
+       :count => (@count_type == :timed ? result.count : count)
     )
   end
 
@@ -92,15 +94,15 @@ class Widget
       when :weekly
         @start = @run_time.yesterday.beginning_of_week
         @end = @run_time.yesterday.end_of_week
-        return {:created_at => @start..@end}
+        return {@field => @start..@end}
       when :monthly
         @start = @run_time.yesterday.beginning_of_month
         @end = @run_time.yesterday.end_of_month
-        return {:created_at => @start..@end}
+        return {@field => @start..@end}
       when :yearly
         @start = @run_time.yesterday.beginning_of_year
         @end = @run_time.yesterday.end_of_year
-        return {:created_at => @start..@end}
+        return {@field => @start..@end}
     end
   end
 

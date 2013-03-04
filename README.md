@@ -2,9 +2,8 @@
 
 Easily save counts of models or specific model queries on regular intervals into a single table to use for statistics.
 
-For example, you can set up a count on the number of subscribers you get per hour, day, week, etc. That number will be saved in a table in the database with which you can do whatever you want (I'll show you how to graph it below). 
+For example, you can set up a count on the number of subscribers you get per hour, day, week, etc. That number will be saved in a table in the database with which you can do whatever you want (I'll show you how to graph it below). The other main option is a total count, basically a `User.count` for each of those time periods.
 
-You can specifiy which intervals you want to track, and also specify certain conditions on the query such as `:country => "Canada"`. The datetime field to query on can also be set if its not created_at: `field :registered_at`.
 
 ## Installation
 
@@ -27,11 +26,12 @@ Then setup your lib/mancora.rb file. Only class_name and interval are required
 
     Mancora.widgets do
 
-      widget :errors do
+      widget :errors_per_hour do
         class_name Requests
         interval :hourly
         conditions :name => "error"
       end
+      #this generates: Request.where(:name => "error", :created_at => 1.hour.ago.beginning_of_hour..1.hour.ago.end_of_hour).count
 
       widget :subscribers_count do
         class_name Subscriber
@@ -40,7 +40,25 @@ Then setup your lib/mancora.rb file. Only class_name and interval are required
         time 1.day.ago #lag by one day
       end
 
+      widget :total_subscribers_count do
+        class_name Subscriber
+        interval [:daily, :weekly, :monthly, :yearly]
+        count_type :total
+      end
+
     end
+
+Options
+
+key | function
+--- | ---
+class_name | The class name you will be querying on
+interval | The interval you want to collect stats on
+count_type | Count for this hour (:timed which queries only this time period is the default), or total (:total) for the current time. Total cannot be backfilled. 
+conditions | Additional conditions for query
+field | Field other than created_at to query on. Not included in a :total count_type.
+time | Amount of time to lag by: 1.day, 1.hour.
+
 
 Now to run it
 
