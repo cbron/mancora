@@ -58,7 +58,7 @@ class Widget
     puts "Running " + interval.to_s.capitalize + " " + self.name.to_s
     if @count_type == :timed
       result = @class_name.where(all_conditions)
-    elsif @count_type = :total
+    elsif @count_type == :total
       count = @class_name.count
     elsif !@query.blank?
       result = eval(@query)
