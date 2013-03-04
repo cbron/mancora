@@ -1,4 +1,4 @@
-# Mancora
+# Mancora [![Build Status](https://secure.travis-ci.org/cbron/mancora.png)](http://travis-ci.org/cbron/mancora)
 
 Easily save counts of models or specific model queries on regular intervals into a single table to use for statistics.
 
@@ -16,19 +16,13 @@ Or install it yourself as:
 
     gem install mancora
     rails g mancora:install
-    rake db:migrate # Creates a mancora_stats table, Mancora::Stat from rails
+    rake db:migrate # Creates a mancora_stats table, use `Mancora::Stat` to access it
+
+## Usage
 
 Then setup your lib/mancora.rb file. Only class_name and interval are required
 
     Mancora.widgets do
-
-      # widget :example do 
-      #   class_name whatever_class_name_to_query
-      #   interval [:hour, :daily, :weekly, :monthly, :yearly]
-      #   conditions condition_to_include_in_query
-      #   field if_its_not_created_at
-      #   time lag_by_this_amount
-      # end
 
       widget :errors do
         class_name Requests
@@ -45,17 +39,23 @@ Then setup your lib/mancora.rb file. Only class_name and interval are required
 
     end
 
-To run this in the console
+To run this
 
+    #in the console
     Mancora.run
 
-And to backfill the last 36 hours
-
+    #backfill the last 36 hours
     Mancora.run(36)
 
-Finally setup the cron
+    #via rake
+    rake mancora
 
-    cron here
+Finally setup a cron to run **every hour**. You could use the whenever gem but personally I still like: 
+
+    # Every hour at 5 minutes in
+    5 */1 * * * cd /rails_path && /usr/local/bin/rake RAILS_ENV=production mancora >> /rails_path/log/mancora.log 2>&1
+
+    
 
 Result in db
 
@@ -98,3 +98,4 @@ Coffeescript
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+

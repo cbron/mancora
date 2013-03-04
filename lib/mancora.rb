@@ -1,7 +1,7 @@
 require "mancora/version"
 require 'mancora/widget'
 require 'mancora/stat'
-
+require 'mancora/railtie' if defined?(Rails)
 
 module Mancora
   extend self
