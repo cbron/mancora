@@ -1,22 +1,23 @@
 class Widget
-  attr_accessor :name, :class_name, :interval, :conditions, :start, :end, :time, :field
+  attr_accessor :name, :class_name, :interval, :count_type, :conditions, :start, :end, :time, :field, :query
   
   def initialize(name, backfill = 0, &block)
     @name = name
     @conditions = {}
     instance_eval &block
 
-    @time ||= Time.now
-    @field ||= :created_at
+    lazy_names
 
     #run all backfills plus the original @time
     backfill.downto(0) do |b|
       @run_time = @time - b.hours
       @interval.each do |i|
-        conditions = @conditions.merge!(get_interval(i))
-        run(i, conditions) if should_i_run?(i)
+        time_interval = @query.blank? ? get_interval(i) : {}
+        all_conditions = @conditions.merge!(time_interval)
+        run(i, all_conditions) if should_i_run?(i)
       end
     end
+
   end
 
   def class_name(str)
@@ -25,6 +26,10 @@ class Widget
 
   def interval(opts)
     @interval =  opts.instance_of?(Array)? opts : [opts]
+  end
+
+  def count_type(str)
+    @count_type = str
   end
 
   def conditions(str)
@@ -39,9 +44,25 @@ class Widget
     @field = str
   end
 
-  def run(interval, conditions)
+  def query(str)
+    @query = str
+  end
+
+  def lazy_names
+    @time ||= Time.now
+    @field ||= :created_at
+    @count_type ||= :timed
+  end
+
+  def run(interval, all_conditions)
     puts "Running " + interval.to_s.capitalize + " " + self.name.to_s
-    result = @class_name.where(conditions)
+    if @count_type == :timed
+      result = @class_name.where(all_conditions)
+    elsif @count_type = :total
+      count = @class_name.count
+    elsif !@query.blank?
+      result = eval(@query)
+    end
 
     #create or update record, this way we can backfill without overwriting
     obj = Mancora::Stat.find_or_initialize_by_name_and_start(name, @start)
@@ -51,7 +72,7 @@ class Widget
        :start => @start,
        :end => @end,
        :interval => interval,
-       :count => result.count
+       :count => count || result.count
     )
   end
 
@@ -87,13 +108,13 @@ class Widget
   def should_i_run?(interval)
     if interval == :hourly
       true
-    elsif @run_time.hour == 0 && interval == :daily
+    elsif interval == :daily && @run_time.hour == 0
       true
-    elsif @run_time.beginning_of_week == @run_time.beginning_of_day && interval == :weekly
+    elsif interval == :weekly && @run_time.beginning_of_week == @run_time.beginning_of_day
       true
-    elsif (@run_time.day == 1) && interval == :monthly
+    elsif interval == :monthly && @run_time.day == 1
       true
-    elsif @run_time.beginning_of_year == @run_time.beginning_of_day && interval == :yearly
+    elsif interval == :yearly && @run_time.beginning_of_year == @run_time.beginning_of_day
       true
     else
       false
