@@ -22,27 +22,27 @@ To add it to your application
 
 ## Usage
 
-Then setup your lib/mancora.rb file. Only class_name and interval are required
+Then setup your lib/mancora.rb file. Only class_name and intervals are required
 
     Mancora.widgets do
 
       widget :errors_per_hour do
         class_name Requests
-        interval :hourly
+        intervals :hourly
         conditions :name => "error"
       end
       #this generates: Request.where(:name => "error", :created_at => 1.hour.ago.beginning_of_hour..1.hour.ago.end_of_hour).count
 
       widget :subscribers_count do
         class_name Subscriber
-        interval [:hourly, :daily, :monthly, :yearly]
+        intervals [:hourly, :daily, :monthly, :yearly]
         field :registered_at
         time 1.day.ago #lag by one day
       end
 
       widget :total_subscribers_count do
         class_name Subscriber
-        interval [:daily, :weekly, :monthly, :yearly]
+        intervals [:daily, :weekly, :monthly, :yearly]
         count_type :total
       end
 
@@ -53,10 +53,10 @@ Options
 key | function
 --- | ---
 class_name | The class name you will be querying on
-interval | The interval you want to collect stats on
-count_type | Count for this hour (:timed which queries only this time period is the default), or total (:total) for the current time. Total cannot be backfilled. 
-conditions | Additional conditions for query
-field | Field other than created_at to query on. Not included in a :total count_type.
+intervals | The interval you want to collect stats on
+count_type | The type of count for this interval. `:timed` will query only this time period and is the default. `:total` will just do a total count on that modal, it cannot be backfilled. 
+conditions | Additional conditions for query as a hash
+field | Field other than created_at to query on. Not included if count_type is :total.
 time | Amount of time to lag by: 1.day, 1.hour.
 
 
@@ -78,12 +78,13 @@ Finally setup a cron to run **every hour**. You could use the whenever gem but p
 
     
 
-Result in db (notice subscribers_count has a day lag)
+Result in db (notice subscribers_count has a day lag, and daily includes the time zone)
 
-id | name | interval | count | start | end
+id | name | intervals | count | start | end
 --- | --- | --- | --- | --- | ---
 1 | errors | hourly | 4 | 2013-03-01 21:00:00 | 2013-03-01 21:59:59
 2 | subscribers_count | hourly | 2 | 2013-02-28 21:00:00 | 2013-02-28 21:59:59
+3 | total_subscribers_count | daily | 972 | 2013-02-27 07:00:00 | 2013-02-28 06:59:59
 
 
 ## Graphing the results
@@ -94,12 +95,12 @@ After installing Raphael/Morris its as easy as:
 
 Controller
 
-    @subscribers_today = Mancora::Stat.where(:name => "subscribers_count", :interval => :hourly).limit(24).order("start desc")
+    @subscribers_today = Mancora::Stat.where(:name => "subscribers_count", :intervals => :hourly).limit(24).order("start desc")
 
 View
 
     %h1 Subscribers today
-    =content_tag :div, "", id: "subscribers_chart", data: {subscribers: @subscribers_today} 
+    =content_tag :div, "", id: "subscribers_chart", data: {subscriberstoday: @subscribers_today} 
 
 Coffeescript
 

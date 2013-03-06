@@ -1,5 +1,5 @@
 class Widget
-  attr_accessor :name, :class_name, :interval, :count_type, :conditions, :start, :end, :time, :field, :query
+  attr_accessor :name, :class_name, :intervals, :count_type, :conditions, :start, :end, :time, :field, :query
   
   def initialize(name, backfill = 0, &block)
     @name = name
@@ -13,7 +13,7 @@ class Widget
       b != 0 ? @backfilling = true : @backfilling = false
       @run_time = @time - b.hours
 
-      @interval.each do |i|
+      @intervals.each do |i|
         time_interval = @query.blank? ? get_interval(i) : {}
         all_conditions = @conditions.merge(time_interval)
         run(i, all_conditions) if should_i_run?(i)
@@ -26,8 +26,8 @@ class Widget
     @class_name = str
   end
 
-  def interval(opts)
-    @interval =  opts.instance_of?(Array)? opts : [opts]
+  def intervals(opts)
+    @intervals =  opts.instance_of?(Array)? opts : [opts]
   end
 
   def count_type(str)
@@ -73,7 +73,7 @@ class Widget
        :name => @name,
        :start => @start,
        :end => @end,
-       :interval => interval,
+       :intervals => interval,
        :count => (@count_type == :timed ? result.count : count)
     )
   end
