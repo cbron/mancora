@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Mancora::VERSION
   spec.authors       = ["cbron"]
   spec.email         = ["x@x.com"]
-  spec.description   = %q{Save for counts for statistics}
+  spec.description   = %q{Automate queries over regular intervals for statistics}
   spec.summary       = %q{Easily save counts of models on regular intervals into a single table to use for statistics.}
   spec.homepage      = ""
   spec.license       = "MIT"
