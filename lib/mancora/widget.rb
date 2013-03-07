@@ -1,5 +1,6 @@
 class Widget
-  attr_accessor :name, :class_name, :intervals, :count_type, :conditions, :start, :end, :time, :field, :query
+  attr_accessor :name, :class_name, :intervals, :count_type, :conditions,
+                :start, :end, :time, :field, :query, :class_method
   
   def initialize(name, backfill = 0, &block)
     @name = name
@@ -19,7 +20,6 @@ class Widget
         run(i, all_conditions) if should_i_run?(i)
       end
     end
-
   end
 
   def class_name(str)
@@ -50,6 +50,10 @@ class Widget
     @query = str
   end
 
+  def class_method(str)
+    @class_method = str
+  end
+
   def lazy_names
     @time ||= Time.now
     @field ||= :created_at
@@ -58,24 +62,29 @@ class Widget
 
   def run(interval, all_conditions)
     puts "Running " + interval.to_s + " " + self.name.to_s
-    if @count_type == :timed
-      result = @class_name.where(all_conditions)
-    elsif @count_type == :total
-      count = (@backfilling ? nil : @class_name.where(@conditions).count)
-    elsif !@query.blank?
-      result = eval(@query)
+
+    if @class_method
+      @class_name.send(@class_method)
+    else
+      if @count_type == :timed
+        result = @class_name.where(all_conditions)
+      elsif @count_type == :total
+        count = (@backfilling ? nil : @class_name.where(@conditions).count)
+      elsif !@query.blank?
+        result = eval(@query)
+      end
+
+      #create or update record, this way we can backfill without overwriting
+      obj = Mancora::Stat.find_or_initialize_by_name_and_start(name, @start)
+
+      obj.update_attributes(
+         :name => @name,
+         :start => @start,
+         :end => @end,
+         :intervals => interval,
+         :count => (@count_type == :timed ? result.count : count)
+      )
     end
-
-    #create or update record, this way we can backfill without overwriting
-    obj = Mancora::Stat.find_or_initialize_by_name_and_start(name, @start)
-
-    obj.update_attributes(
-       :name => @name,
-       :start => @start,
-       :end => @end,
-       :intervals => interval,
-       :count => (@count_type == :timed ? result.count : count)
-    )
   end
 
   #given an interval symbol, return a hash with the correct conditions
