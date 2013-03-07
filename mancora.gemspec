@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["cbron"]
   spec.email         = ["x@x.com"]
   spec.description   = %q{Automate queries over regular intervals for statistics}
-  spec.summary       = %q{Easily save counts of models on regular intervals into a single table to use for statistics.}
+  spec.summary       = %q{Easily save query counts on regular intervals into a single table to use for statistics.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
