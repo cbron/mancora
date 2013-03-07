@@ -19,4 +19,10 @@ Mancora.widgets do
   #   count_type :total
   # end
 
+  # widget :custm_promo_codes
+  #   class_name Subscriber
+  #   class_method generate_promo_code_hash
+  #   intervals :monthly
+  # end
+
 end

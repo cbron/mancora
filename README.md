@@ -2,7 +2,7 @@
 
 Easily save counts of models or specific model queries on regular intervals into a single table to use for statistics.
 
-For example, you can set up a count on the number of subscribers you get per hour, day, week, etc. That number will be saved in a table in the database with which you can do whatever you want (I'll show you how to graph it below). The other main option is a total count, basically a `User.count` for each of those time periods. Finally you can specify a custom method to call completely seperate from Mancora.
+For example, you can set up a count on the number of subscribers you get per hour, day, week, etc. That number will be saved in a table in the database with which you can do whatever you want (I'll show you how to graph it below). The other main option is a total count, basically a `User.count` for each of those time periods. Finally you can specify a custom class method to call, completely seperate from Mancora.
 
 
 ## Installation
@@ -49,7 +49,7 @@ Then setup your lib/mancora.rb file. Only class_name and intervals are required
       widget :custm_promo_codes
         class_name Subscriber
         class_method generate_promo_code_hash
-        intervals :month
+        intervals :monthly
       end
 
     end
@@ -64,7 +64,7 @@ count_type | The type of count for this interval. `:timed` will query only this 
 conditions | Additional conditions for query as a hash
 field | Field other than created_at to query on. Not included if count_type is :total.
 time | Amount of time to lag by: 1.day, 1.hour.
-class_method | class method name of custom method to call, will not insert row in database, all this does is call the cass method
+class_method | Custom class method to call, will not insert row in database. All this does is call the method at run time
 
 
 Now to run it
