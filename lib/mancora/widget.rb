@@ -121,11 +121,11 @@ class Widget
       true
     elsif interval == :daily && @run_time.hour == 0
       true
-    elsif interval == :weekly && @run_time.beginning_of_week == @run_time.beginning_of_day
+    elsif interval == :weekly && @run_time.beginning_of_week == @run_time.beginning_of_hour
       true
-    elsif interval == :monthly && @run_time.day == 1
+    elsif interval == :monthly && @run_time.day == 1 && @run_time.hour == 0
       true
-    elsif interval == :yearly && @run_time.beginning_of_year == @run_time.beginning_of_day
+    elsif interval == :yearly && @run_time.beginning_of_year == @run_time.beginning_of_hour
       true
     else
       false
